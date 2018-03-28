@@ -2,7 +2,7 @@ import numpy as np
 from numpy.linalg import norm
 
 mass_sun = 1.989 * 10 ** 30
-G = 6.675E(-11)
+G = 6.675e-11
 
 
 class Planet(object):

@@ -2,7 +2,7 @@ import json
 from planet import Planet
 from numpy.linalg import norm
 
-with open('data3.json') as json_data:
+with open('mercury-data.json') as json_data:
     data = json.load(json_data)
 
 time = 1000
