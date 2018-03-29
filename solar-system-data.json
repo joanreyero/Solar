@@ -1,26 +1,26 @@
 
 {
-    "Mercury": {
-        "mass": "3.285E+23",
-        "radius": "57.9E+9",
-        "start_angle": "0"
-    },
+    "Mercury": [
+        3.285E23,
+        57.9E9,
+        0
+    ],
 
-    "Venus": {
-        "mass": "4.867E+24",
-        "radius": "108.2E+9",
-        "start_angle": "0"
-    },
+    "Venus": [
+        4.867E24,
+        108.2E9,
+        0
+    ],
 
-    "Earth": {
-        "mass": "5.972E+24",
-        "radius": "149.6E+9",
-        "start_angle": "0"
-    },
+    "Earth": [
+        5.972E24,
+        149.6E9,
+        0
+    ],
 
-    "Mars": {
-        "mass": "6.390E+23",
-        "radius": "227.9E+9",
-        "start_angle": "0"
-    }
+    "Mars": [
+        6.390E23,
+        227.9E9,
+        0
+    ]
 }
