@@ -7,15 +7,23 @@ G = 6.675e-11
 
 
 class Planet(object):
-    def __init__(self, mass, radius, angle, time_interval):
+    def __init__(self, mass, radius, angle, color, time_interval,
+                 initial_velocity=None):
         self.mass = mass
+        self.color = color
+        print self.color
         # Creates a vector position from polar form
         self.pos = radius * np.array([np.cos(angle), np.sin(angle)])
 
         # Creates a vector velocity perpendicular to position
-        # using v = sqrt(GM/r)
-        self.vel = (np.sqrt(G * mass_sun / radius) *
-                    np.array([-np.sin(angle), np.cos(angle)]))
+        # using v = sqrt(GM/r) if the initial velocity was not
+        # specified.
+        if not initial_velocity:
+            self.vel = (np.sqrt(G * mass_sun / radius) *
+                        np.array([-np.sin(angle), np.cos(angle)]))
+        else:
+            self.vel = (initial_velocity *
+                        np.array([-np.sin(angle), np.cos(angle)]))
         print self.vel
 
         # All the planets have to be initialised in order to calculate
@@ -29,15 +37,10 @@ class Planet(object):
         # A small time interval for numerical integration
         self.t = time_interval
 
-    def acc_sun(self):
-        """Calculating the acceleration due to the Sun.
-        """
-        return (-G * mass_sun * self.pos / (norm(self.pos))**3)
-
     def update_acc(self, planets):
         """Calculating the acceleration due to the other planets.
         """
-        acc = self.acc_sun()
+        acc = 0
         for planet in planets:
             if planet is not self:
                 dist = self.pos - planet.pos  # Distance between planets

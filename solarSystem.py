@@ -38,20 +38,21 @@ class Solar(object):
     def run(self):
         fig = plt.figure()
         ax = plt.axes()
+        axes = 4e11
         self.patches = [plt.Circle((planet.pos[0], planet.pos[1]),
-                                   1*10**10, color = 'g')
+                                   5*10**9, color = planet.color)
                         for planet in self.planets]
         for patch in self.patches:
             ax.add_patch(patch)
         ax.axis('scaled')
-        ax.set_xlim(-4e11, 4e11)
-        ax.set_ylim(-4e11, 4e11)
+        ax.set_xlim(-axes, axes)
+        ax.set_ylim(-axes, axes)
 
-        anim = FuncAnimation(fig, self.animate, init_func = self.init, interval = 50)
+        anim = FuncAnimation(fig, self.animate, init_func = self.init, interval = 1)
         plt.show()
 
 
-solar = Solar('mercury-data', 10000)
+solar = Solar('solar-system-data', 2000)
 
 solar.run()
 
