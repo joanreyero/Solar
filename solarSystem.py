@@ -15,7 +15,7 @@ class Solar(object):
                         for planet in data]
 
         for planet in self.planets:
-            planet.update_acc(self.planets)
+            planet.update_acc(self.planets, first=True)
 
     def init(self):
        return self.patches
@@ -38,7 +38,7 @@ class Solar(object):
     def run(self):
         fig = plt.figure()
         ax = plt.axes()
-        axes = 4e11
+        axes = 3e11
         self.patches = [plt.Circle((planet.pos[0], planet.pos[1]),
                                    5*10**9, color = planet.color)
                         for planet in self.planets]
@@ -52,8 +52,7 @@ class Solar(object):
         plt.show()
 
 
-solar = Solar('solar-system-data', 2000)
-
+solar = Solar('mercury-data', 20000)
 solar.run()
 
 
