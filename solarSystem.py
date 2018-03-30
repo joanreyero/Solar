@@ -14,23 +14,25 @@ class Solar(object):
         with open(data_name + '.json') as json_data:
             data = json.load(json_data)
 
-        self.planets = [Planet(*[planet] + data[planet][0:3])
+        self.planets = [Planet(*[planet] + data[planet][0:4])
                         for planet in data]
 
         for planet in self.planets:
             planet.update_acc(self.planets, first=True)
 
         if satelite:
+            self.distances = []
             with open(satelite + '.json') as json_data:
                 sat_data = json.load(json_data)['Satelite']
 
             for p in self.planets:
                 if p.name == sat_data[0]:
-                    planet = p
+                    origin = p
+                if p.name == sat_data[1]:
+                    target = p
 
-            self.planets.append(Satelite(*sat_data[1:] +
-                                         [planet.pos, planet.mass, planet.vel,
-                                          data[planet.name][3], self.planets]))
+            self.planets.append(Satelite(*[origin, target] + sat_data[2:] +
+                                         [data[planet.name][4], self.planets]))
         self.t = time_step
 
 
@@ -41,27 +43,30 @@ class Solar(object):
         self.move()
         for n, planet in enumerate(self.planets):
             self.patches[n].center = (planet.pos[0], planet.pos[1])
-            #print self.patches[n].center
-            #print planet.pos
-            #print '\n'
         return self.patches
 
     def get_time_step(self):
         for body in self.planets:
             if type(body).__name__ == "Satelite":
                 sat = body
-                print norm(sat.acc)
-        if norm(sat.acc) > 0.01:
-            print 100
-            return 1000
-        else:
-            print self.t
-            return self.t
+        t = 0.01*norm(sat.vel)/norm(sat.acc)
+        if t > 20000:
+            return 20000
+        return t
 
     def move(self):
         t = self.get_time_step()
         for planet in self.planets:
-            planet.update_pos(t)
+            if type(planet).__name__ == "Satelite":
+                planet.update_pos(t
+
+
+
+
+                )
+                self.distances.append(planet.get_distance_target())
+            else:
+                planet.update_pos(t)
         for planet in self.planets:
             planet.update_vel_acc(t, self.planets)
 
@@ -70,17 +75,23 @@ class Solar(object):
         ax = plt.axes()
         axes = 3E11
         self.patches = [plt.Circle((planet.pos[0], planet.pos[1]),
-                                   5*10**9, color = planet.color)
+                                   planet.size, color = planet.color)
                         for planet in self.planets]
         for patch in self.patches:
             ax.add_patch(patch)
+        ax.set_axis_bgcolor('black')
         ax.axis('scaled')
         ax.set_xlim(-axes, axes)
         ax.set_ylim(-axes, axes)
 
         anim = FuncAnimation(fig, self.animate, init_func = self.init, interval = 1)
         plt.show()
+        try:
+            return ("""Simulation complete. Minimal distance to target was """
+                    + str(min(self.distances)))
+        except:
+            return 'Simulation complete'
 
 
 solar = Solar('solar-system-data', 20000, satelite='earth-satelite-data')
-solar.run()
+print solar.run()

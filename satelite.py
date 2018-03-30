@@ -7,27 +7,24 @@ G = 6.674e-11
 
 
 class Satelite(object):
-    def __init__(self, color, mass, given_speed, engine_time, angle,
-                 pos, mass_planet, vel_planet, radius_planet,
-                 planets):
+    def __init__(self, origin, target, color, size, mass, given_speed, angle,
+                 radius_planet, planets):
         self.color = color
+        self.size = size
         self.mass = mass
-        self.engine_time = engine_time
         self.time = 0
-
-        self.vel = (vel_planet + given_speed *
+        self.vel = (origin.vel + given_speed *
                      np.array([np.cos(angle), np.sin(angle)]))
 
-        print angle
-        self.pos = np.array([pos[0] + radius_planet * np.cos(angle),
-                             pos[1] + radius_planet * np.sin(angle)])
-
-        print "position " + str(self.pos)
-        print "velocity " + str(self.vel)
+        self.pos = np.array([origin.pos[0] + radius_planet * np.cos(angle),
+                             origin.pos[1] + radius_planet * np.sin(angle)])
 
         self.acc = self.update_acc(planets)
+        self.origin = origin
+        self.target = target
+        self.min_dist = None
 
-        print "acceleration " + str(self.acc)
+
         self.old_acc = self.acc
 
     def update_acc(self, planets):
@@ -39,17 +36,17 @@ class Satelite(object):
                 dist = self.pos - planet.pos  # Distance between planets
                 # Using Newton's gravitational formula.
                 acc = acc + (-G * planet.mass * dist) / math.pow(norm(dist), 3)
-        #print acc
         return acc
 
     def update_pos(self, t):
         """Obtaining the new position using the Beeman's algorithm.
         """
-        if self.time < self.engine_time:
-            self.pos += t * self.vel
-        else:
-            self.pos = (self.pos + self.vel * t + (math.pow(t, 2) / 6.0) *
+        #xprint self.pos
+        self.pos = (self.pos + self.vel * t + (math.pow(t, 2) / 6.0) *
                         (4.0 * self.acc - self.old_acc))
+
+    def get_distance_target(self):
+        return norm(self.pos-self.target.pos)
 
     def update_vel(self, t, new_acc):
         """Obtaining the new velocity using the Beeman's algorithm.
@@ -59,11 +56,6 @@ class Satelite(object):
 
     def update_vel_acc(self, t, planets):
         new_acc = self.update_acc(planets)
-        if self.time >= self.engine_time:
-            self.update_vel(t, new_acc)
-        print self.vel
-        print self.acc
-        print '\n'
+        self.update_vel(t, new_acc)
         self.old_acc = self.acc
         self.acc = new_acc
-        self.time += t

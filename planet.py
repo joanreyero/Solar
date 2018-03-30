@@ -7,9 +7,10 @@ G = 6.674e-11
 
 
 class Planet(object):
-    def __init__(self, name, color, mass, pos):
+    def __init__(self, name, color, size, mass, pos):
         self.name = name
         self.color = color
+        self.size = size
         self.mass = mass
         self.pos = np.array(pos)
         radius = norm(pos)
