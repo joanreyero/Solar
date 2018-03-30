@@ -2,6 +2,7 @@ import json
 import math
 import numpy as np
 from planet import Planet
+from satelite import Satelite
 from numpy.linalg import norm
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
@@ -13,11 +14,24 @@ class Solar(object):
         with open(data_name + '.json') as json_data:
             data = json.load(json_data)
 
-        self.planets = [Planet(*[planet] + data[planet] + [time_step])
+        self.planets = [Planet(*[planet] + data[planet][0:3])
                         for planet in data]
 
         for planet in self.planets:
             planet.update_acc(self.planets, first=True)
+
+        if satelite:
+            with open(satelite + '.json') as json_data:
+                sat_data = json.load(json_data)['Satelite']
+
+            for p in self.planets:
+                if p.name == sat_data[0]:
+                    planet = p
+
+            self.planets.append(Satelite(*sat_data[1:] +
+                                         [planet.pos, planet.mass, planet.vel,
+                                          data[planet.name][3], self.planets]))
+        self.t = time_step
 
 
     def init(self):
@@ -32,11 +46,24 @@ class Solar(object):
             #print '\n'
         return self.patches
 
+    def get_time_step(self):
+        for body in self.planets:
+            if type(body).__name__ == "Satelite":
+                sat = body
+                print norm(sat.acc)
+        if norm(sat.acc) > 0.01:
+            print 100
+            return 1000
+        else:
+            print self.t
+            return self.t
+
     def move(self):
+        t = self.get_time_step()
         for planet in self.planets:
-            planet.update_pos()
+            planet.update_pos(t)
         for planet in self.planets:
-            planet.update_vel_acc(self.planets)
+            planet.update_vel_acc(t, self.planets)
 
     def run(self):
         fig = plt.figure()
@@ -57,17 +84,3 @@ class Solar(object):
 
 solar = Solar('solar-system-data', 20000, satelite='earth-satelite-data')
 solar.run()
-
-
-
-#print '\n'*2
-
-#for planet in solar.planets:
- #   print planet.pos
-
-#print solar.move()
-
-#print '\n'
-
-#for planet in solar.planets:
- #   print planet.pos

@@ -7,10 +7,10 @@ G = 6.674e-11
 
 
 class Planet(object):
-    def __init__(self, name, color, mass, pos, time_interval):
-        self.mass = mass
-        self.color = color
+    def __init__(self, name, color, mass, pos):
         self.name = name
+        self.color = color
+        self.mass = mass
         self.pos = np.array(pos)
         radius = norm(pos)
 
@@ -28,13 +28,10 @@ class Planet(object):
         # in the algorithm to obtain the new positions and velocities.
         self.old_acc = self.acc
 
-        # A small time interval for numerical integration
-        self.t = time_interval
-
     def update_acc(self, planets, first=False):
         """Calculating the acceleration due to the other planets.
         """
-        acc = np.array([0.0, 0.0])
+        acc = np.zeros(2)
         for planet in planets:
             if planet is not self:
                 dist = self.pos - planet.pos  # Distance between planets
@@ -45,20 +42,20 @@ class Planet(object):
             self.old_acc = acc
         return acc
 
-    def update_pos(self):
+    def update_pos(self, t):
         """Obtaining the new position using the Beeman's algorithm.
         """
-        self.pos = (self.pos + self.vel * self.t + (math.pow(self.t, 2) / 6.0) *
+        self.pos = (self.pos + self.vel * t + (math.pow(t, 2) / 6.0) *
                     (4.0 * self.acc - self.old_acc))
 
-    def update_vel(self, new_acc):
+    def update_vel(self, t, new_acc):
         """Obtaining the new velocity using the Beeman's algorithm.
         """
-        self.vel = (self.vel + ((self.t / 6.0) *
+        self.vel = (self.vel + ((t / 6.0) *
                     (2.0 * new_acc + 5.0 * self.acc - self.old_acc)))
 
-    def update_vel_acc(self, planets):
+    def update_vel_acc(self, t, planets):
         new_acc = self.update_acc(planets)
-        self.update_vel(new_acc)
+        self.update_vel(t, new_acc)
         self.old_acc = self.acc
         self.acc = new_acc
