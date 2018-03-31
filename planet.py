@@ -11,6 +11,7 @@ class Planet(object):
         self.name = name
         self.color = color
         self.size = size
+        self.laps = (0, 0)
         self.mass = mass
         self.pos = np.array(pos)
         radius = norm(pos)
@@ -43,11 +44,17 @@ class Planet(object):
             self.old_acc = acc
         return acc
 
-    def update_pos(self, t):
+    def update_pos_laps(self, t, time):
         """Obtaining the new position using the Beeman's algorithm.
         """
-        self.pos = (self.pos + self.vel * t + (math.pow(t, 2) / 6.0) *
-                    (4.0 * self.acc - self.old_acc))
+        new_pos = (self.pos + self.vel * t + (math.pow(t, 2) / 6.0) *
+                   (4.0 * self.acc - self.old_acc))
+
+        if self.pos[1] < 0 and new_pos[1] >= 0 :
+            self.laps = (self.laps[0]+1, time)
+
+        self.pos = new_pos
+
 
     def update_vel(self, t, new_acc):
         """Obtaining the new velocity using the Beeman's algorithm.
@@ -60,3 +67,9 @@ class Planet(object):
         self.update_vel(t, new_acc)
         self.old_acc = self.acc
         self.acc = new_acc
+
+    def get_energy(self, planets):
+        U = sum([(- G * planet.mass * self.mass) / norm(self.pos - planet.pos)
+                 for planet in planets if planet is not self])
+        K = 0.5 * self.mass * math.pow(norm(self.vel), 2)
+        return U + K

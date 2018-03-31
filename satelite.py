@@ -59,3 +59,9 @@ class Satelite(object):
         self.update_vel(t, new_acc)
         self.old_acc = self.acc
         self.acc = new_acc
+
+    def get_energy(self, planets):
+        U = sum([(- G * planet.mass * self.mass) / norm(self.pos - planet.pos)
+                 for planet in planets if planet is not self])
+        K = 0.5 * self.mass * math.pow(norm(self.vel), 2)
+        return U + K
